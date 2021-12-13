@@ -15,7 +15,7 @@ class Graph {
         graph.noOfVertices = vertices.length;
         graph.adjList = {};
         for (let i = 0; i < graph.noOfVertices; i++) {
-            graph.adjList[vertices[i]] = [];
+            graph.adjList[i] = [];
         }
         return graph;
     }

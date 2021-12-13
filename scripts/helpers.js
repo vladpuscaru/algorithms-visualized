@@ -14,19 +14,19 @@ const constructGraphFromGrid = (grid) => {
         const neighbourLeft = grid.cells.find(e => e.x === i - 1 && e.y === j);
 
         if (neighbourTop && neighbourTop.type === current.type) {
-            graph.addEdge(current, neighbourTop);
+            graph.addEdge(k, neighbourTop);
         }
 
         if (neighbourRight && neighbourRight.type === current.type) {
-            graph.addEdge(current, neighbourRight);
+            graph.addEdge(k, neighbourRight);
         }
 
         if (neighbourBottom && neighbourBottom.type === current.type) {
-            graph.addEdge(current, neighbourBottom);
+            graph.addEdge(k, neighbourBottom);
         }
 
         if (neighbourLeft && neighbourLeft.type === current.type) {
-            graph.addEdge(current, neighbourLeft);
+            graph.addEdge(k, neighbourLeft);
         }
     }
 
@@ -40,8 +40,12 @@ const getCellCoordsFromMouseCoords = (event, canvas) => {
     let cellX = Math.floor(canvasX / gridGUI.cellSize);
     let cellY = Math.floor(canvasY / gridGUI.cellSize);
 
-    cellX = cellX > 0 && cellX < gridGUI.grid.rows ? cellX : 0;
-    cellY = cellY > 0 && cellY < gridGUI.grid.cols ? cellY : 0;
+    cellX = cellX >= 0 && cellX < gridGUI.grid.cols ? cellX : 0;
+    cellY = cellY >= 0 && cellY < gridGUI.grid.rows ? cellY : 0;
 
     return [cellX, cellY];
+}
+
+function sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
 }

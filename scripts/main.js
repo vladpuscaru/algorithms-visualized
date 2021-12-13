@@ -1,6 +1,8 @@
 const canvas = document.getElementById("canvas");
 const gridGUI = new GridGUI(canvas);
 
+let sourceNode, destinationNode;
+
 const graph = constructGraphFromGrid(gridGUI.grid);
 
 const update = () => {
@@ -21,18 +23,25 @@ canvas.addEventListener("mousemove", (event) => {
 canvas.addEventListener("click", (event) => {
     event.preventDefault();
     const [cellX, cellY] = getCellCoordsFromMouseCoords(event, canvas);
-    gridGUI.setSourceNode(cellX, cellY);
+    sourceNode = gridGUI.setSourceNode(cellX, cellY);
     update();
 });
 
 canvas.addEventListener("contextmenu", (event) => {
     event.preventDefault();
     const [cellX, cellY] = getCellCoordsFromMouseCoords(event, canvas);
-    gridGUI.setDestinationNode(cellX, cellY);
+    destinationNode = gridGUI.setDestinationNode(cellX, cellY);
     update();
 });
 
 
+
+document.getElementById("btn-BFS").addEventListener("click", (event)  => {
+    event.preventDefault();
+    const visited = BFS(graph, sourceNode);
+    gridGUI.animateVisited(visited);
+    update();
+});
 
 /* Testing */
 // const testBFS = () => {
