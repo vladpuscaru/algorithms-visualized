@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Algorithms Visualized</title>
+        <link rel="stylesheet" href="styles/main.css">
+    </head>
+    <body>
+
+        <header>
+            <h1>Search Algorithms Visualized</h1>
+        </header>
+
+        <main>
+            <div id="inputs">
+                <button>BFS</button>
+            </div>
+
+            <div>
+            <canvas id="canvas" width="512" height="512"></canvas>
+                <div id="canvas__info">
+                    <span id="canvas__info--mousepos">Mouse: (0, 0)</span>
+                </div>
+            </div>
+        </main>
+
+        <script src="structures/Queue.js"></script>
+        <script src="structures/Graph.js"></script>
+        <script src="algorithms/BFS.js"></script>
+
+        <script src="scripts/helpers.js"></script>
+        <script src="scripts/maps.js"></script>
+        <script src="scripts/Grid.js"></script>
+        <script src="scripts/GridGUI.js"></script>
+        <script src="scripts/main.js"></script>
+    </body>
+</html>

@@ -1,0 +1,25 @@
+*, *:after, *:before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0E1117;
+    color: #C8D1D9;
+}
+
+header {
+    text-align: center;
+    padding: 15px 0;
+}
+
+#canvas {
+    border: 1px solid #C8D1D9;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
