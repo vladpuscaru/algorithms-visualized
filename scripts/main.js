@@ -38,10 +38,20 @@ canvas.addEventListener("contextmenu", (event) => {
 
 document.getElementById("btn-BFS").addEventListener("click", (event)  => {
     event.preventDefault();
-    const visited = BFS(graph, sourceNode);
-    gridGUI.animateVisited(visited);
+    gridGUI.clearAnim();
+    BFS(graph, sourceNode);
+    gridGUI.animateVisited();
     update();
 });
+
+document.getElementById("btn-DFS").addEventListener("click", (event)  => {
+    event.preventDefault();
+    gridGUI.clearAnim();
+    DFS(graph, sourceNode);
+    gridGUI.animateVisited();
+    update();
+});
+
 
 /* Testing */
 // const testBFS = () => {

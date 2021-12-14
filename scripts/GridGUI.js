@@ -13,7 +13,7 @@ class GridGUI {
         this.ctx = canvas.getContext("2d");
         this.grid = new Grid();
         this.cellSize = this.canvas.width / this.grid.cols;
-
+        this.currentAnimation = "";
         this.animQueue = new Queue();
 
         this.bordersOn = true;
@@ -47,10 +47,6 @@ class GridGUI {
         }
     }
 
-    highlight = (x, y) => {
-        const cell = this.grid.cells.find(e => e.x === x && e.y === y);
-    }
-
     setSourceNode = (x, y) => {
         this.grid.cells.forEach(cell => cell.isSource = false);
         const cell = this.grid.cells.find(e => e.x === x && e.y === y);
@@ -70,14 +66,21 @@ class GridGUI {
     }
 
     animateVisited = () => {
-        const interval = setInterval(() => {
+        this.currentAnimation = setInterval(() => {
             const cellIndex = this.animQueue.isEmpty() ? "" : this.animQueue.dequeue();
             this.grid.cells[cellIndex] ? this.grid.cells[cellIndex].isVisited = true : "";
             this.draw();
 
             if (this.animQueue.isEmpty()) {
-                clearInterval(interval);
+                clearInterval(this.currentAnimation);
             }
         });
+    }
+
+    clearAnim = () => {
+        clearInterval(this.currentAnimation);
+        this.animQueue.clear();
+
+        this.grid.cells.forEach(cell => cell.isVisited = false);
     }
 }

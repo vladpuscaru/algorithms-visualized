@@ -15,4 +15,10 @@ class Queue {
     isEmpty = () => {
         return this.elements.length === 0;
     }
+
+    clear = () => {
+        while (this.elements.length > 0) {
+            this.elements.shift();
+        }
+    }
 }
