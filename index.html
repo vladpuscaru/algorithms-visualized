@@ -2,7 +2,13 @@
 <html>
     <head>
         <title>Algorithms Visualized</title>
-        <link rel="stylesheet" href="styles/main.css">
+        <script src="scripts/require.js"></script>
+
+        <style>
+            .hidden {
+                display: none;
+            }
+        </style>
     </head>
     <body>
 
@@ -11,28 +17,51 @@
         </header>
 
         <main>
-            <div id="inputs">
-                <button id="btn-BFS">BFS</button>
-                <button id="btn-DFS">DFS</button>
-            </div>
-
-            <div>
-            <canvas id="canvas" width="512" height="512"></canvas>
-                <div id="canvas__info">
-                    <span id="canvas__info--mousepos">Mouse: (0, 0)</span>
-                </div>
-            </div>
+            <canvas id="canvas" width="720" height="720"></canvas>
         </main>
 
-        <script src="structures/Queue.js"></script>
-        <script src="structures/Graph.js"></script>
-        <script src="algorithms/BFS.js"></script>
-        <script src="algorithms/DFS.js"></script>
+        <div id="debug"></div>
 
-        <script src="scripts/helpers.js"></script>
-        <script src="scripts/maps.js"></script>
-        <script src="scripts/Grid.js"></script>
-        <script src="scripts/GridGUI.js"></script>
-        <script src="scripts/main.js"></script>
+        <div class="hidden" id="map_default" data-width="32" data-height="32">
+12222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222221112222222222222222222
+22222222222111122222222222222222
+22222222211111122222222222222222
+22222222111111122222222222222222
+22222222221111222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+12222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222221112222222222222222222
+22222222222111122222222222222222
+22222222211111122222222222222222
+22222222111111122222222222222222
+22222222221111222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222
+22222222222222222222222222222222</div>
+
+        <script>
+            window.onload = async () => {
+                await requirejs(["js/index.js"], function (js) {
+
+                });
+            }
+        </script>
     </body>
 </html>
