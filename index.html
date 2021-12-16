@@ -8,6 +8,10 @@
             .hidden {
                 display: none;
             }
+            main {
+                display: flex;
+                justify-content: space-around;
+            }
         </style>
     </head>
     <body>
@@ -17,7 +21,18 @@
         </header>
 
         <main>
-            <canvas id="canvas" width="720" height="720"></canvas>
+            <canvas id="canvas" width="800" height="800"></canvas>
+            <div id="controls">
+                <label for="cars">
+                    Map:
+                <select name="cars" id="cars">
+                    <option value="default">Default 32x32</option>
+                    <option value="map1">Map 1 64x64</option>
+                    <option value="maze1">Maze 1 32x32</option>
+                    <option value="maze2">Maze 2 32x32</option>
+                </select>
+                </label>
+            </div>
         </main>
 
         <div id="debug"></div>

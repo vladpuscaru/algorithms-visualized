@@ -5,6 +5,9 @@ define(["require", "exports", "./gui/GridGUI"], function (require, exports, Grid
     const debug = document.getElementById("debug");
     const gridGUI = new GridGUI_1.GridGUI(document.getElementById("canvas"), mapDefault);
     gridGUI.draw();
-    debug.innerHTML = gridGUI.debugString();
+    // debug.innerHTML = gridGUI.debugString();
+    setInterval(() => {
+        gridGUI.draw();
+    }, 1000 / 60);
 });
 //# sourceMappingURL=index.js.map

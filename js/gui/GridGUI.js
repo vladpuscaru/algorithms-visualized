@@ -9,22 +9,36 @@ define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constan
             this.mousePosition = new Vec2_1.Vec2();
             this.mousePosition.x = -1;
             this.mousePosition.y = -1;
+            this.cellWidthInPixels = this.canvas.width / this.grid.getWidth();
+            this.cellHeightInPixels = this.canvas.height / this.grid.getHeight();
+            this.setupEventListeners();
         }
         draw() {
             const ctx = this.canvas.getContext("2d");
-            const width = this.canvas.width;
-            const height = this.canvas.height;
-            const cellWidthInPixels = this.canvas.width / this.grid.getWidth();
-            const cellHeightInPixels = this.canvas.height / this.grid.getHeight();
             for (let i = 0; i < this.grid.cells.length; i++) {
                 for (let j = 0; j < this.grid.cells[i].length; j++) {
                     const cell = this.grid.cells[i][j];
                     ctx.fillStyle = cell.data.color;
-                    ctx.fillRect(cell.position.x * cellWidthInPixels, cell.position.y * cellHeightInPixels, cellWidthInPixels, cellHeightInPixels);
+                    ctx.fillRect(cell.position.x * this.cellWidthInPixels, cell.position.y * this.cellHeightInPixels, this.cellWidthInPixels, this.cellHeightInPixels);
                     ctx.strokeStyle = "#000000";
-                    ctx.strokeRect(cell.position.x * cellWidthInPixels, cell.position.y * cellHeightInPixels, cellWidthInPixels, cellHeightInPixels);
+                    ctx.strokeRect(cell.position.x * this.cellWidthInPixels, cell.position.y * this.cellHeightInPixels, this.cellWidthInPixels, this.cellHeightInPixels);
                 }
             }
+            ctx.font = "18px Arial";
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText(`Mouse [${this.mousePosition.x}][${this.mousePosition.y}]`, 5, this.canvas.height - 5);
+        }
+        setupEventListeners() {
+            // Mouse Position
+            this.canvas.addEventListener('mousemove', (event) => {
+                const rect = this.canvas.getBoundingClientRect();
+                const distance = new Vec2_1.Vec2();
+                distance.x = event.clientX - rect.left;
+                distance.y = event.clientY - rect.top;
+                console.log(distance.x + " | " + distance.y);
+                this.mousePosition.x = Math.floor(distance.x / this.canvas.width * this.grid.getWidth());
+                this.mousePosition.y = Math.floor(distance.y / this.canvas.height * this.grid.getHeight());
+            });
         }
         debugString() {
             return `GridGUI` + "<br/>" +
