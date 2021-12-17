@@ -1,8 +1,14 @@
-import { GridGUI } from "./gui/GridGUI";
+import { GridGUI, GridGUIHTML } from "./gui/GridGUI";
 
 const mapDefault = document.getElementById("map_default")!.innerHTML;
 const debug = document.getElementById("debug")!;
-const gridGUI = new GridGUI(<HTMLCanvasElement>document.getElementById("canvas"), mapDefault);
+
+
+const gridGUIHTML: GridGUIHTML = {
+    canvas: <HTMLCanvasElement>document.getElementById("canvas"),
+    strokeBtn: <HTMLInputElement>document.getElementById("stroke")
+}
+const gridGUI = new GridGUI(gridGUIHTML, mapDefault);
 
 gridGUI.draw();
 // debug.innerHTML = gridGUI.debugString();

@@ -9,6 +9,8 @@ define(["require", "exports"], function (require, exports) {
     Constants.COLOR_RED = "#FF0000";
     Constants.COLOR_GREEN = "#00FF00";
     Constants.COLOR_BLUE = "#0000FF";
+    Constants.COLOR_SOURCE = "#FFFF00";
+    Constants.COLOR_DESTINATION = "#555500";
     Constants.CELL_TYPE_MAP = {
         0: Constants.COLOR_RED,
         1: Constants.COLOR_GREEN,

@@ -12,6 +12,10 @@
                 display: flex;
                 justify-content: space-around;
             }
+            #controls {
+                display: flex;
+                flex-direction: column;
+            }
         </style>
     </head>
     <body>
@@ -23,9 +27,13 @@
         <main>
             <canvas id="canvas" width="800" height="800"></canvas>
             <div id="controls">
-                <label for="cars">
+                <label for="stroke">
+                    Grid
+                    <input id="stroke" type="checkbox" checked />
+                </label>
+                <label for="map">
                     Map:
-                <select name="cars" id="cars">
+                <select name="map" id="map">
                     <option value="default">Default 32x32</option>
                     <option value="map1">Map 1 64x64</option>
                     <option value="maze1">Maze 1 32x32</option>

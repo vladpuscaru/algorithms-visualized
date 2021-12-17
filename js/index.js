@@ -3,7 +3,11 @@ define(["require", "exports", "./gui/GridGUI"], function (require, exports, Grid
     Object.defineProperty(exports, "__esModule", { value: true });
     const mapDefault = document.getElementById("map_default").innerHTML;
     const debug = document.getElementById("debug");
-    const gridGUI = new GridGUI_1.GridGUI(document.getElementById("canvas"), mapDefault);
+    const gridGUIHTML = {
+        canvas: document.getElementById("canvas"),
+        strokeBtn: document.getElementById("stroke")
+    };
+    const gridGUI = new GridGUI_1.GridGUI(gridGUIHTML, mapDefault);
     gridGUI.draw();
     // debug.innerHTML = gridGUI.debugString();
     setInterval(() => {

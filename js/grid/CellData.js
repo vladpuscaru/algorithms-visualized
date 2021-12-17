@@ -5,6 +5,8 @@ define(["require", "exports"], function (require, exports) {
     class CellData {
         constructor(data) {
             this.color = data.color;
+            this.isSource = false;
+            this.isDestination = false;
             Object.keys(data).forEach((key) => {
                 this[key] = data[key];
             });

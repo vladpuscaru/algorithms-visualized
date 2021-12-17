@@ -3,18 +3,30 @@ import { Vec2 } from "../utils/Vec2";
 import { Cell } from "../grid/Cell";
 import { Constants } from "../utils/Constants";
 
+export interface GridGUIHTML {
+    canvas: HTMLCanvasElement;
+    strokeBtn: HTMLInputElement;
+}
+
 export class GridGUI {
 
     private readonly canvas: HTMLCanvasElement;
+    private readonly strokeBtn: HTMLInputElement;
+
     private grid: Grid;
 
     private mousePosition: Vec2;
 
-    private cellWidthInPixels;
-    private cellHeightInPixels;
+    private readonly cellWidthInPixels;
+    private readonly cellHeightInPixels;
 
-    constructor(canvas: HTMLCanvasElement, mapConfig: string) {
-        this.canvas = canvas;
+    private sourceCell: Cell | undefined;
+    private destinationCell: Cell | undefined;
+
+    constructor(html: GridGUIHTML, mapConfig: string) {
+        this.canvas = html.canvas;
+        this.strokeBtn = html.strokeBtn;
+
         this.grid = new Grid(mapConfig);
 
         this.mousePosition = new Vec2();
@@ -24,6 +36,9 @@ export class GridGUI {
         this.cellWidthInPixels = this.canvas.width / this.grid.getWidth();
         this.cellHeightInPixels = this.canvas.height / this.grid.getHeight();
 
+        this.sourceCell = undefined;
+        this.destinationCell = undefined;
+
         this.setupEventListeners();
     }
 
@@ -32,12 +47,30 @@ export class GridGUI {
 
         for (let i = 0; i < this.grid.cells.length; i++) {
             for (let j = 0; j < this.grid.cells[i].length; j++) {
+                // Drawing
                 const cell: Cell = this.grid.cells[i][j];
                 ctx.fillStyle = cell.data.color;
+
+                // Highlight
+                if (this.mousePosition.x === i && this.mousePosition.y === j) {
+                    ctx.fillStyle = Constants.COLOR_HIGHLIGHT;
+                }
+
+                // Source and Destination
+                if (cell.data.isSource) {
+                    ctx.fillStyle = Constants.COLOR_SOURCE;
+                }
+                if (cell.data.isDestination) {
+                    ctx.fillStyle = Constants.COLOR_DESTINATION;
+                }
+
                 ctx.fillRect(cell.position.x * this.cellWidthInPixels, cell.position.y * this.cellHeightInPixels, this.cellWidthInPixels, this.cellHeightInPixels);
 
-                ctx.strokeStyle = "#000000";
-                ctx.strokeRect(cell.position.x * this.cellWidthInPixels, cell.position.y * this.cellHeightInPixels, this.cellWidthInPixels, this.cellHeightInPixels);
+                // Stroke
+                if (this.strokeBtn.checked) {
+                    ctx.strokeStyle = "#000000";
+                    ctx.strokeRect(cell.position.x * this.cellWidthInPixels, cell.position.y * this.cellHeightInPixels, this.cellWidthInPixels, this.cellHeightInPixels);
+                }
             }
         }
 
@@ -57,7 +90,32 @@ export class GridGUI {
 
             this.mousePosition.x = Math.floor(distance.x / this.canvas.width * this.grid.getWidth());
             this.mousePosition.y = Math.floor(distance.y / this.canvas.height * this.grid.getHeight());
+        });
 
+        // Set source cell
+        this.canvas.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.grid.cells.forEach(cellRow => {
+                cellRow.forEach(cell => {
+                    cell.data.isSource = false;
+                })
+            });
+
+            this.sourceCell = this.grid.cells[this.mousePosition.x][this.mousePosition.y];
+            this.sourceCell.data.isSource = true;
+        });
+
+        // Set destination cell
+        this.canvas.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+            this.grid.cells.forEach(cellRow => {
+                cellRow.forEach(cell => {
+                    cell.data.isDestination = false;
+                })
+            });
+
+            this.destinationCell = this.grid.cells[this.mousePosition.x][this.mousePosition.y];
+            this.destinationCell.data.isDestination = true;
         });
     }
 
