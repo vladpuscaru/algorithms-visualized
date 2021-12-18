@@ -1,0 +1,1 @@
+{"version":3,"file":"AlgConfig.js","sourceRoot":"","sources":["../../src/algorithms/AlgConfig.ts"],"names":[],"mappings":";;;;IAEA,MAAa,SAAS;QAIlB,YAAY,SAAiB,EAAE,cAAoC;YAC/D,IAAI,CAAC,SAAS,GAAG,SAAS,CAAC;YAC3B,IAAI,CAAC,cAAc,GAAG,cAAc,CAAC;QACzC,CAAC;KACJ;IARD,8BAQC"}

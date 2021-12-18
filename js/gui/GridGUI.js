@@ -1,4 +1,4 @@
-define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constants"], function (require, exports, Grid_1, Vec2_1, Constants_1) {
+define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constants", "../structures/Graph", "../algorithms/AlgConfig", "../algorithms/Algorithm", "../structures/Queue"], function (require, exports, Grid_1, Vec2_1, Constants_1, Graph_1, AlgConfig_1, Algorithm_1, Queue_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GridGUI = void 0;
@@ -6,7 +6,17 @@ define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constan
         constructor(html, mapConfig) {
             this.canvas = html.canvas;
             this.strokeBtn = html.strokeBtn;
+            this.runBtn = html.runBtn;
+            this.algConfig = new AlgConfig_1.AlgConfig("BFS", []);
+            const allowedActions = [];
+            for (let j = 0; j < html.allowedActionsCBs.length; j++) {
+                if (html.allowedActionsCBs[j].checked) {
+                    allowedActions.push(html.allowedActionsCBs[j].dataset['action'].split(",").map(e => Number.parseInt(e)));
+                }
+            }
+            this.algConfig.allowedActions = allowedActions;
             this.grid = new Grid_1.Grid(mapConfig);
+            this.graph = Graph_1.Graph.constructFromMatrix(this.grid.cells, this.algConfig.allowedActions);
             this.mousePosition = new Vec2_1.Vec2();
             this.mousePosition.x = -1;
             this.mousePosition.y = -1;
@@ -14,18 +24,30 @@ define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constan
             this.cellHeightInPixels = this.canvas.height / this.grid.getHeight();
             this.sourceCell = undefined;
             this.destinationCell = undefined;
+            this.animQueue = new Queue_1.Queue();
+            this.animationID = -1;
             this.setupEventListeners();
         }
         draw() {
             const ctx = this.canvas.getContext("2d");
+            const highlightedCell = this.grid.cells[this.mousePosition.x] ? this.grid.cells[this.mousePosition.x][this.mousePosition.y] : undefined;
+            const highlightedNeighbours = highlightedCell ? this.graph.elements.get(highlightedCell) : [];
             for (let i = 0; i < this.grid.cells.length; i++) {
                 for (let j = 0; j < this.grid.cells[i].length; j++) {
                     // Drawing
                     const cell = this.grid.cells[i][j];
                     ctx.fillStyle = cell.data.color;
-                    // Highlight
-                    if (this.mousePosition.x === i && this.mousePosition.y === j) {
-                        ctx.fillStyle = Constants_1.Constants.COLOR_HIGHLIGHT;
+                    // Visited cell
+                    if (cell.data.isVisited) {
+                        ctx.fillStyle = Constants_1.Constants.COLOR_VISITED;
+                    }
+                    // Highlight hovered cell
+                    if (cell === highlightedCell) {
+                        ctx.fillStyle = Constants_1.Constants.COLOR_HIGHLIGHT_CELL;
+                    }
+                    // Highlight neighbours of hovered cell
+                    if (highlightedNeighbours.find(c => c.position.x === cell.position.x && c.position.y === cell.position.y)) {
+                        ctx.fillStyle = Constants_1.Constants.COLOR_HIGHLIGHT_NEIGHBOUR;
                     }
                     // Source and Destination
                     if (cell.data.isSource) {
@@ -47,6 +69,38 @@ define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constan
             ctx.fillText(`Mouse [${this.mousePosition.x}][${this.mousePosition.y}]`, 5, this.canvas.height - 5);
         }
         setupEventListeners() {
+            const gridGUIInstance = this;
+            // Allowed actions
+            const allowedActionsCBs = document.getElementsByClassName("allowed_actions_cb");
+            for (let i = 0; i < allowedActionsCBs.length; i++) {
+                allowedActionsCBs[i].addEventListener('change', () => {
+                    const allowedActions = [];
+                    for (let j = 0; j < allowedActionsCBs.length; j++) {
+                        if (allowedActionsCBs[j].checked) {
+                            allowedActions.push(allowedActionsCBs[j].dataset['action'].split(",").map(e => Number.parseInt(e)));
+                        }
+                    }
+                    this.algConfig.allowedActions = allowedActions;
+                    this.graph = Graph_1.Graph.constructFromMatrix(this.grid.cells, this.algConfig.allowedActions);
+                });
+            }
+            // Run algorithm
+            this.runBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.animQueue.clear();
+                if (this.animationID != -1) {
+                    clearInterval(this.animationID);
+                }
+                this.grid.cells.forEach(cellRow => cellRow.forEach(cell => cell.data.isVisited = false));
+                Algorithm_1.Algorithm.BFS(this.graph, this.sourceCell, gridGUIInstance);
+                this.animationID = setInterval(() => {
+                    const cell = this.animQueue.dequeue();
+                    cell.data.isVisited = true;
+                    if (this.animQueue.isEmpty()) {
+                        clearInterval(this.animationID);
+                    }
+                }, 100);
+            });
             // Mouse Position
             this.canvas.addEventListener('mousemove', (event) => {
                 const rect = this.canvas.getBoundingClientRect();
@@ -78,6 +132,9 @@ define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constan
                 this.destinationCell = this.grid.cells[this.mousePosition.x][this.mousePosition.y];
                 this.destinationCell.data.isDestination = true;
             });
+        }
+        addToAnimQueue(cell) {
+            this.animQueue.enqueue(cell);
         }
         debugString() {
             return `GridGUI` + "<br/>" +

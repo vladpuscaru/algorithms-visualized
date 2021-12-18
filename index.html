@@ -16,6 +16,22 @@
                 display: flex;
                 flex-direction: column;
             }
+            .highlight {
+                display:  none;
+                position: absolute;
+                left: -100%;
+                opacity: 0;
+                transition: .3s ease-in-out;
+            }
+            .allowed_actions {
+                display: flex;
+                flex-direction: column;
+            }
+            .allowed_actions div {
+                position: relative;
+                display: flex;
+                justify-content: space-between;
+            }
         </style>
     </head>
     <body>
@@ -40,16 +56,69 @@
                     <option value="maze2">Maze 2 32x32</option>
                 </select>
                 </label>
+                <label for="algorithm">
+                    Algorithm:
+                    <select name="algorithm" id="algorithm">
+                        <option value="BFS">BFS</option>
+                    </select>
+                </label>
+                <div class="allowed_actions">
+                    <span>Allowed actions:</span>
+                    <div>
+                        <!-- The Origin (0, 0) is in the upper left corner -->
+                        <!-- The y axis is positive downwards -->
+                        <label for="upper_left">
+                            <span class="highlight">UPPER LEFT (-1, 1)</span>
+                            <input id="upper_left" class="allowed_actions_cb" data-action="-1,-1"  type="checkbox" />
+                        </label>
+                        <label for="up">
+                            <span class="highlight">UP (0, 1)</span>
+                            <input id="up" class="allowed_actions_cb" data-action="0,-1"  type="checkbox" checked />
+                        </label>
+                        <label for="upper_right">
+                            <span class="highlight">UPPER RIGHT (1, 1)</span>
+                            <input id="upper_right" class="allowed_actions_cb" data-action="1,-1"  type="checkbox" />
+                        </label>
+                    </div>
+
+                    <div>
+                        <label for="left">
+                            <span class="highlight">LEFT (-1, 0)</span>
+                            <input id="left" class="allowed_actions_cb" data-action="-1,0"  type="checkbox" checked />
+                        </label>
+                        <label for="right">
+                            <span class="highlight">RIGHT (1, 0)</span>
+                            <input id="right" class="allowed_actions_cb" data-action="1,0"  type="checkbox" checked />
+                        </label>
+                    </div>
+
+                    <div>
+                        <label for="lower_left">
+                            <span class="highlight">LOWER LEFT (-1, -1)</span>
+                            <input id="lower_left" class="allowed_actions_cb" data-action="-1,1" type="checkbox" />
+                        </label>
+                        <label for="down">
+                            <span class="highlight">DOWN (0, -1)</span>
+                            <input id="down" class="allowed_actions_cb" data-action="0,1" type="checkbox" checked />
+                        </label>
+                        <label for="lower_right">
+                            <span class="highlight">LOWER RIGHT (1, -1)</span>
+                            <input id="lower_right" class="allowed_actions_cb" data-action="1,1"  type="checkbox" />
+                        </label>
+                    </div>
+                </div>
+
+                <button id="run">Run</button>
             </div>
         </main>
 
         <div id="debug"></div>
 
         <div class="hidden" id="map_default" data-width="32" data-height="32">
-12222222222222222222222222222222
 22222222222222222222222222222222
 22222222222222222222222222222222
 22222222222222222222222222222222
+22211222222222222222222222222222
 22222222222222222222222222222222
 22222222222222222222222222222222
 22222222222222222222222222222222

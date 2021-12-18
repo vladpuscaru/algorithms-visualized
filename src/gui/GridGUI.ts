@@ -2,18 +2,26 @@ import { Grid } from "../grid/Grid";
 import { Vec2 } from "../utils/Vec2";
 import { Cell } from "../grid/Cell";
 import { Constants } from "../utils/Constants";
+import { Graph } from "../structures/Graph";
+import { AlgConfig } from "../algorithms/AlgConfig";
+import { Algorithm } from "../algorithms/Algorithm";
+import { Queue } from "../structures/Queue";
 
 export interface GridGUIHTML {
     canvas: HTMLCanvasElement;
     strokeBtn: HTMLInputElement;
+    allowedActionsCBs: HTMLCollection;
+    runBtn: HTMLButtonElement
 }
 
 export class GridGUI {
 
     private readonly canvas: HTMLCanvasElement;
     private readonly strokeBtn: HTMLInputElement;
+    private readonly runBtn: HTMLButtonElement;
 
     private grid: Grid;
+    private graph: Graph;
 
     private mousePosition: Vec2;
 
@@ -23,11 +31,28 @@ export class GridGUI {
     private sourceCell: Cell | undefined;
     private destinationCell: Cell | undefined;
 
+    private algConfig: AlgConfig;
+
+    private animQueue: Queue;
+    private animationID: number;
+
     constructor(html: GridGUIHTML, mapConfig: string) {
         this.canvas = html.canvas;
         this.strokeBtn = html.strokeBtn;
+        this.runBtn = html.runBtn;
+
+        this.algConfig = new AlgConfig("BFS", []);
+        const allowedActions: Array<Array<number>> = [];
+        for (let j = 0; j < html.allowedActionsCBs.length; j++) {
+            if ((<HTMLInputElement>html.allowedActionsCBs[j]).checked) {
+                allowedActions.push((<HTMLInputElement>html.allowedActionsCBs[j]).dataset['action']!.split(",").map(e => Number.parseInt(e)));
+            }
+        }
+
+        this.algConfig.allowedActions = allowedActions;
 
         this.grid = new Grid(mapConfig);
+        this.graph = Graph.constructFromMatrix(this.grid.cells, this.algConfig.allowedActions);
 
         this.mousePosition = new Vec2();
         this.mousePosition.x = -1;
@@ -39,11 +64,17 @@ export class GridGUI {
         this.sourceCell = undefined;
         this.destinationCell = undefined;
 
+        this.animQueue = new Queue();
+        this.animationID = -1;
+
         this.setupEventListeners();
     }
 
     draw() {
         const ctx = this.canvas.getContext("2d")!;
+
+        const highlightedCell: Cell | undefined = this.grid.cells[this.mousePosition.x] ? this.grid.cells[this.mousePosition.x][this.mousePosition.y] : undefined;
+        const highlightedNeighbours: Cell[] = highlightedCell ? this.graph.elements.get(highlightedCell)! : [];
 
         for (let i = 0; i < this.grid.cells.length; i++) {
             for (let j = 0; j < this.grid.cells[i].length; j++) {
@@ -51,9 +82,19 @@ export class GridGUI {
                 const cell: Cell = this.grid.cells[i][j];
                 ctx.fillStyle = cell.data.color;
 
-                // Highlight
-                if (this.mousePosition.x === i && this.mousePosition.y === j) {
-                    ctx.fillStyle = Constants.COLOR_HIGHLIGHT;
+                // Visited cell
+                if (cell.data.isVisited) {
+                    ctx.fillStyle = Constants.COLOR_VISITED;
+                }
+
+                // Highlight hovered cell
+                if (cell === highlightedCell) {
+                    ctx.fillStyle = Constants.COLOR_HIGHLIGHT_CELL;
+                }
+
+                // Highlight neighbours of hovered cell
+                if (highlightedNeighbours.find(c => c.position.x === cell.position.x && c.position.y === cell.position.y)) {
+                    ctx.fillStyle = Constants.COLOR_HIGHLIGHT_NEIGHBOUR;
                 }
 
                 // Source and Destination
@@ -80,6 +121,47 @@ export class GridGUI {
     }
 
     setupEventListeners(): void {
+        const gridGUIInstance = this;
+
+        // Allowed actions
+        const allowedActionsCBs = document.getElementsByClassName("allowed_actions_cb");
+        for (let i = 0; i < allowedActionsCBs.length; i++) {
+            allowedActionsCBs[i].addEventListener('change', () => {
+                const allowedActions: Array<Array<number>> = [];
+                for (let j = 0; j < allowedActionsCBs.length; j++) {
+                    if ((<HTMLInputElement>allowedActionsCBs[j]).checked) {
+                        allowedActions.push((<HTMLInputElement>allowedActionsCBs[j]).dataset['action']!.split(",").map(e => Number.parseInt(e)));
+                    }
+                }
+
+                this.algConfig.allowedActions = allowedActions;
+
+                this.graph = Graph.constructFromMatrix(this.grid.cells, this.algConfig.allowedActions);
+            });
+        }
+
+        // Run algorithm
+        this.runBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            this.animQueue.clear();
+            if (this.animationID != -1) {
+                clearInterval(this.animationID);
+            }
+            this.grid.cells.forEach(cellRow => cellRow.forEach(cell => cell.data.isVisited = false));
+
+            Algorithm.BFS(this.graph, this.sourceCell!, gridGUIInstance);
+
+            this.animationID = setInterval(() => {
+                const cell: Cell = this.animQueue.dequeue();
+                cell.data.isVisited = true;
+
+                if (this.animQueue.isEmpty()) {
+                    clearInterval(this.animationID);
+                }
+            }, 100);
+        });
+
         // Mouse Position
         this.canvas.addEventListener('mousemove', (event) => {
             const rect = this.canvas.getBoundingClientRect();
@@ -119,6 +201,9 @@ export class GridGUI {
         });
     }
 
+    addToAnimQueue(cell: Cell): void {
+        this.animQueue.enqueue(cell);
+    }
 
     debugString(): string {
         return `GridGUI` + "<br/>" +

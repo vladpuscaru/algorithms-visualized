@@ -5,7 +5,9 @@ define(["require", "exports", "./gui/GridGUI"], function (require, exports, Grid
     const debug = document.getElementById("debug");
     const gridGUIHTML = {
         canvas: document.getElementById("canvas"),
-        strokeBtn: document.getElementById("stroke")
+        strokeBtn: document.getElementById("stroke"),
+        allowedActionsCBs: document.getElementsByClassName("allowed_actions_cb"),
+        runBtn: document.getElementById("run")
     };
     const gridGUI = new GridGUI_1.GridGUI(gridGUIHTML, mapDefault);
     gridGUI.draw();

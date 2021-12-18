@@ -7,6 +7,7 @@ define(["require", "exports"], function (require, exports) {
             this.color = data.color;
             this.isSource = false;
             this.isDestination = false;
+            this.isVisited = false;
             Object.keys(data).forEach((key) => {
                 this[key] = data[key];
             });
