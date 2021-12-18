@@ -7,7 +7,10 @@ define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constan
             this.canvas = html.canvas;
             this.strokeBtn = html.strokeBtn;
             this.runBtn = html.runBtn;
-            this.algConfig = new AlgConfig_1.AlgConfig("BFS", []);
+            this.clearBtn = html.clearBtn;
+            this.allowedActionsCBs = html.allowedActionsCBs;
+            this.algorithm = html.algorithm;
+            this.algConfig = new AlgConfig_1.AlgConfig(50, []);
             const allowedActions = [];
             for (let j = 0; j < html.allowedActionsCBs.length; j++) {
                 if (html.allowedActionsCBs[j].checked) {
@@ -71,13 +74,12 @@ define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constan
         setupEventListeners() {
             const gridGUIInstance = this;
             // Allowed actions
-            const allowedActionsCBs = document.getElementsByClassName("allowed_actions_cb");
-            for (let i = 0; i < allowedActionsCBs.length; i++) {
-                allowedActionsCBs[i].addEventListener('change', () => {
+            for (let i = 0; i < this.allowedActionsCBs.length; i++) {
+                this.allowedActionsCBs[i].addEventListener('change', () => {
                     const allowedActions = [];
-                    for (let j = 0; j < allowedActionsCBs.length; j++) {
-                        if (allowedActionsCBs[j].checked) {
-                            allowedActions.push(allowedActionsCBs[j].dataset['action'].split(",").map(e => Number.parseInt(e)));
+                    for (let j = 0; j < this.allowedActionsCBs.length; j++) {
+                        if (this.allowedActionsCBs[j].checked) {
+                            allowedActions.push(this.allowedActionsCBs[j].dataset['action'].split(",").map(e => Number.parseInt(e)));
                         }
                     }
                     this.algConfig.allowedActions = allowedActions;
@@ -87,19 +89,25 @@ define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constan
             // Run algorithm
             this.runBtn.addEventListener('click', (event) => {
                 event.preventDefault();
-                this.animQueue.clear();
-                if (this.animationID != -1) {
-                    clearInterval(this.animationID);
+                this.clearCanvas();
+                if (this.algorithm.value === Constants_1.Constants.ALGORITHM_BFS) {
+                    Algorithm_1.Algorithm.BFS(this.graph, this.sourceCell, gridGUIInstance);
                 }
-                this.grid.cells.forEach(cellRow => cellRow.forEach(cell => cell.data.isVisited = false));
-                Algorithm_1.Algorithm.BFS(this.graph, this.sourceCell, gridGUIInstance);
+                else if (this.algorithm.value === Constants_1.Constants.ALGORITHM_DFS) {
+                    Algorithm_1.Algorithm.DFS(this.graph, this.sourceCell, gridGUIInstance);
+                }
                 this.animationID = setInterval(() => {
                     const cell = this.animQueue.dequeue();
                     cell.data.isVisited = true;
                     if (this.animQueue.isEmpty()) {
                         clearInterval(this.animationID);
                     }
-                }, 100);
+                }, this.algConfig.animationTime);
+            });
+            // Clear canvas
+            this.clearBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.clearCanvas();
             });
             // Mouse Position
             this.canvas.addEventListener('mousemove', (event) => {
@@ -132,6 +140,13 @@ define(["require", "exports", "../grid/Grid", "../utils/Vec2", "../utils/Constan
                 this.destinationCell = this.grid.cells[this.mousePosition.x][this.mousePosition.y];
                 this.destinationCell.data.isDestination = true;
             });
+        }
+        clearCanvas() {
+            this.animQueue.clear();
+            if (this.animationID != -1) {
+                clearInterval(this.animationID);
+            }
+            this.grid.cells.forEach(cellRow => cellRow.forEach(cell => cell.data.isVisited = false));
         }
         addToAnimQueue(cell) {
             this.animQueue.enqueue(cell);

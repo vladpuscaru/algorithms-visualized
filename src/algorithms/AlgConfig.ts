@@ -1,11 +1,11 @@
 
 
 export class AlgConfig {
-    algorithm: string;
     allowedActions: Array<Array<number>>;
+    animationTime: number;
 
-    constructor(algorithm: string, allowedActions: Array<Array<number>>) {
-        this.algorithm = algorithm;
+    constructor(animationTime: number, allowedActions: Array<Array<number>>) {
+        this.animationTime = animationTime;
         this.allowedActions = allowedActions;
     }
 }

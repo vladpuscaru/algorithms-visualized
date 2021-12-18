@@ -5,8 +5,10 @@ define(["require", "exports", "./Cell", "./CellData", "../utils/Constants"], fun
     class Grid {
         constructor(mapConfig) {
             this.cells = new Array();
-            const map = mapConfig.split("\n");
+            let map = mapConfig.split("\n");
             map.shift(); // Remove first blank element
+            // Remove white spaces
+            map = map.map(el => el.replace(/ /g, ""));
             let column;
             let cellType;
             let cellData;

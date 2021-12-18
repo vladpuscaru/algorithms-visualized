@@ -6,8 +6,10 @@ const debug = document.getElementById("debug")!;
 const gridGUIHTML: GridGUIHTML = {
     canvas: <HTMLCanvasElement>document.getElementById("canvas"),
     strokeBtn: <HTMLInputElement>document.getElementById("stroke"),
-    allowedActionsCBs: document.getElementsByClassName("allowed_actions_cb"),
-    runBtn: <HTMLButtonElement>document.getElementById("run")
+    runBtn: <HTMLButtonElement>document.getElementById("run"),
+    clearBtn: <HTMLButtonElement>document.getElementById("clear"),
+    allowedActionsCBs: <HTMLCollection>document.getElementsByClassName("allowed_actions_cb"),
+    algorithm: <HTMLSelectElement>document.getElementById("algorithm")
 }
 
 const gridGUI = new GridGUI(gridGUIHTML, mapDefault);

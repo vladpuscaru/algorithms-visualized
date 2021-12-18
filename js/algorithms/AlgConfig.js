@@ -3,8 +3,8 @@ define(["require", "exports"], function (require, exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AlgConfig = void 0;
     class AlgConfig {
-        constructor(algorithm, allowedActions) {
-            this.algorithm = algorithm;
+        constructor(animationTime, allowedActions) {
+            this.animationTime = animationTime;
             this.allowedActions = allowedActions;
         }
     }

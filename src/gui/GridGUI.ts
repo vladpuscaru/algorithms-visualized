@@ -10,8 +10,10 @@ import { Queue } from "../structures/Queue";
 export interface GridGUIHTML {
     canvas: HTMLCanvasElement;
     strokeBtn: HTMLInputElement;
+    runBtn: HTMLButtonElement;
+    clearBtn: HTMLButtonElement;
     allowedActionsCBs: HTMLCollection;
-    runBtn: HTMLButtonElement
+    algorithm: HTMLSelectElement;
 }
 
 export class GridGUI {
@@ -19,6 +21,9 @@ export class GridGUI {
     private readonly canvas: HTMLCanvasElement;
     private readonly strokeBtn: HTMLInputElement;
     private readonly runBtn: HTMLButtonElement;
+    private readonly clearBtn: HTMLButtonElement;
+    private readonly allowedActionsCBs: HTMLCollection;
+    private readonly algorithm: HTMLSelectElement;
 
     private grid: Grid;
     private graph: Graph;
@@ -40,8 +45,11 @@ export class GridGUI {
         this.canvas = html.canvas;
         this.strokeBtn = html.strokeBtn;
         this.runBtn = html.runBtn;
+        this.clearBtn = html.clearBtn;
+        this.allowedActionsCBs = html.allowedActionsCBs;
+        this.algorithm = html.algorithm;
 
-        this.algConfig = new AlgConfig("BFS", []);
+        this.algConfig = new AlgConfig(50, []);
         const allowedActions: Array<Array<number>> = [];
         for (let j = 0; j < html.allowedActionsCBs.length; j++) {
             if ((<HTMLInputElement>html.allowedActionsCBs[j]).checked) {
@@ -124,13 +132,12 @@ export class GridGUI {
         const gridGUIInstance = this;
 
         // Allowed actions
-        const allowedActionsCBs = document.getElementsByClassName("allowed_actions_cb");
-        for (let i = 0; i < allowedActionsCBs.length; i++) {
-            allowedActionsCBs[i].addEventListener('change', () => {
+        for (let i = 0; i < this.allowedActionsCBs.length; i++) {
+            this.allowedActionsCBs[i].addEventListener('change', () => {
                 const allowedActions: Array<Array<number>> = [];
-                for (let j = 0; j < allowedActionsCBs.length; j++) {
-                    if ((<HTMLInputElement>allowedActionsCBs[j]).checked) {
-                        allowedActions.push((<HTMLInputElement>allowedActionsCBs[j]).dataset['action']!.split(",").map(e => Number.parseInt(e)));
+                for (let j = 0; j < this.allowedActionsCBs.length; j++) {
+                    if ((<HTMLInputElement>this.allowedActionsCBs[j]).checked) {
+                        allowedActions.push((<HTMLInputElement>this.allowedActionsCBs[j]).dataset['action']!.split(",").map(e => Number.parseInt(e)));
                     }
                 }
 
@@ -144,13 +151,13 @@ export class GridGUI {
         this.runBtn.addEventListener('click', (event) => {
             event.preventDefault();
 
-            this.animQueue.clear();
-            if (this.animationID != -1) {
-                clearInterval(this.animationID);
-            }
-            this.grid.cells.forEach(cellRow => cellRow.forEach(cell => cell.data.isVisited = false));
+            this.clearCanvas();
 
-            Algorithm.BFS(this.graph, this.sourceCell!, gridGUIInstance);
+            if (this.algorithm.value === Constants.ALGORITHM_BFS) {
+                Algorithm.BFS(this.graph, this.sourceCell!, gridGUIInstance);
+            } else if (this.algorithm.value === Constants.ALGORITHM_DFS) {
+                Algorithm.DFS(this.graph, this.sourceCell!, gridGUIInstance);
+            }
 
             this.animationID = setInterval(() => {
                 const cell: Cell = this.animQueue.dequeue();
@@ -159,7 +166,14 @@ export class GridGUI {
                 if (this.animQueue.isEmpty()) {
                     clearInterval(this.animationID);
                 }
-            }, 100);
+            }, this.algConfig.animationTime);
+        });
+
+        // Clear canvas
+        this.clearBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            this.clearCanvas();
         });
 
         // Mouse Position
@@ -199,6 +213,14 @@ export class GridGUI {
             this.destinationCell = this.grid.cells[this.mousePosition.x][this.mousePosition.y];
             this.destinationCell.data.isDestination = true;
         });
+    }
+
+    clearCanvas(): void {
+        this.animQueue.clear();
+        if (this.animationID != -1) {
+            clearInterval(this.animationID);
+        }
+        this.grid.cells.forEach(cellRow => cellRow.forEach(cell => cell.data.isVisited = false));
     }
 
     addToAnimQueue(cell: Cell): void {

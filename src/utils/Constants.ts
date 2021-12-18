@@ -16,4 +16,7 @@ export class Constants {
         1: Constants.COLOR_GREEN,
         2: Constants.COLOR_BLUE
     }
+
+    static readonly ALGORITHM_BFS = "BFS";
+    static readonly ALGORITHM_DFS = "DFS";
 }

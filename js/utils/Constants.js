@@ -20,5 +20,7 @@ define(["require", "exports"], function (require, exports) {
         1: Constants.COLOR_GREEN,
         2: Constants.COLOR_BLUE
     };
+    Constants.ALGORITHM_BFS = "BFS";
+    Constants.ALGORITHM_DFS = "DFS";
 });
 //# sourceMappingURL=Constants.js.map

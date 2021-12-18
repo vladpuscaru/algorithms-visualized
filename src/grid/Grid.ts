@@ -9,8 +9,11 @@ export class Grid {
     constructor(mapConfig: string) {
         this.cells = new Array<Array<Cell>>();
 
-        const map = mapConfig.split("\n");
+        let map = mapConfig.split("\n");
         map.shift(); // Remove first blank element
+
+        // Remove white spaces
+        map = map.map(el => el.replace(/ /g, ""));
 
         let column: Array<Cell>;
         let cellType: number;
