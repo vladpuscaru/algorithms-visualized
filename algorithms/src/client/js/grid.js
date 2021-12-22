@@ -58,45 +58,58 @@ class Grid {
         this.updateQueue.push({ indices, value });
     }
 
-    animate = (indices, value) => {
+    animate = (indices, value, speed) => {
         let counter = 0;
         const anim = setInterval(() => {
-            const i = indices[counter][0];
-            const j = indices[counter][1];
-            this.data[i][j] = value;
-            this.render();
-            counter++;
+            for (let k = 0; k < speed; k++) {
+                const i = indices[counter][0];
+                const j = indices[counter][1];
+                this.data[i][j] = value;
 
-            if (counter === indices.length) {
+                if (counter < indices.length - 1) {
+                    counter++;
+                }
+            }
+            this.render();
+
+            if (counter >= indices.length - 1) {
                 clearInterval(anim);
                 const index = this.animations.findIndex(x => x === anim);
                 this.animations.splice(index, 1);
                 this.checkUpdateQueue();
             }
-        }, 30);
+        }, 5);
 
         this.animations.push(anim);
     }
 
-    animateBatches = (iterations, value) => {
+    animateBatches = (iterations, value, speed) => {
         let iterCounter = 0;
         const anim = setInterval(() => {
-            const iteration = iterations[iterCounter];
-            for (let k = 0; k < iteration.length; k++) {
-                const i = iteration[k][0];
-                const j = iteration[k][1];
-                this.data[i][j] = value;
+            for (let m = 0; m < speed; m++) {
+                const iteration = iterations[iterCounter];
+                for (let k = 0; k < iteration.length; k++) {
+                    const i = iteration[k][0];
+                    const j = iteration[k][1];
+                    this.data[i][j] = value;
+                }
+                if (iterCounter < iterations.length - 1) {
+                    iterCounter++;
+                } else {
+                    break;
+                }
             }
             this.render();
-            iterCounter++;
 
-            if (iterCounter === iterations.length) {
+            console.log(iterCounter);
+
+            if (iterCounter >= iterations.length - 1) {
                 clearInterval(anim);
                 const index = this.animations.findIndex(x => x === anim);
                 this.animations.splice(index, 1);
                 this.checkUpdateQueue();
             }
-        }, 30);
+        }, 5);
 
         this.animations.push(anim);
     }
@@ -123,7 +136,6 @@ class Grid {
 
     checkUpdateQueue = () => {
         if (this.animations.length === 0) {
-            console.log(this.animations);
             for (let x = 0; x < this.updateQueue.length; x++) {
                 this.update(this.updateQueue[x].indices, this.updateQueue[x].value);
                 this.render();
@@ -180,6 +192,18 @@ class Grid {
             this.data[y][x] = CELL_TYPE_DESTINATION;
             this.render();
         });
+    }
+
+    changeMap = (data) => {
+        this.originalData = [];
+        for (let i = 0; i < data.length; i++) {
+            this.originalData.push([]);
+            for (let j = 0; j < data[i].length; j++) {
+                this.originalData[i].push(data[i][j]);
+            }
+        }
+
+        this.clearCanvas();
     }
 
     /**

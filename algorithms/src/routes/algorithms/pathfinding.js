@@ -35,7 +35,7 @@ router.post('/bfs', (req, res, next) => {
         const algResp = bfs(graph, startNode, endNode);
 
         const open   = algResp.open.map(iter => iter.map(node => [node.y, node.x]));
-        const closed = algResp.closed.map(node => [node.y, node.x]);
+        const closed = algResp.closed.map(iter => iter.map(node => [node.y, node.x]));
         const path   = algResp.path.map(node => [node.y, node.x]);
 
         const endTimeMs = Date.now();
