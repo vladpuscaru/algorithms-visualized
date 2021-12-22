@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Algorithms Visualized</title>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <canvas id="canvas" width="768px" height="768px"></canvas>
+
+        <div>
+            <div>
+                <label for="algorithm">
+                    <select id="algorithm">
+                        <option value="BFS">Breadth First Search</option>
+                        <option value="DFS">Depth First Search</option>
+                    </select>
+                </label>
+                <button id="run">Run</button>
+            </div>
+
+            <!-- Checkbox for toggling the grid -->
+            <label for="toggle-grid">
+                Toggle Grid
+                <input type="checkbox" id="toggle-grid" checked/>
+            </label>
+
+            <!-- Select available actions -->
+            <div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+
+        <script src="js/constants.js"></script>
+        <script src="assets/maps.js"></script>
+        <script src="js/grid.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>
